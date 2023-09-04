@@ -1,0 +1,32 @@
+version: "3"
+services:
+  web:
+    build: .
+    restart: always
+    ports:
+      - 3004:3000
+    environment:
+      - RAILS_ENV=production
+      - RAILS_SERVE_STATIC_FILES=true
+    depends_on:
+      - postgres
+    networks:
+      - movie_database_network
+  postgres:
+    image: postgres:15.3
+    restart: always
+    volumes:
+      - movie_database_db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=admin
+    env_file:
+      - .postgres_password
+    networks:
+      - movie_database_network
+
+networks:
+  movie_database_network:
+volumes:
+  movie_database_db:
+    external: true
+

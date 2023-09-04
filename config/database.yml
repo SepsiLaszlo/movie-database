@@ -81,6 +81,7 @@ test:
 #
 production:
   <<: *default
+  host: postgres
   database: movie_database_production
-  username: movie_database
-  password: <%= ENV["MOVIE_DATABASE_DATABASE_PASSWORD"] %>
+  username: admin
+  password: <%= Rails.application.credentials.postgres_password %>

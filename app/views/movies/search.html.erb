@@ -1,0 +1,55 @@
+<section id="search">
+  <%= form_with url: @search_url.call, method: :get, id: 'search-form' do |form| %>
+    <%= form.text_field :query, value: params['query'], placeholder: 'movie title...' %>
+    <%= form.submit "Search" %>
+  <% end %>
+</section>
+<% if @query.present? %>
+  <section id="cache-info">
+    <p>
+      <% if @cache_hit_count.zero? %>
+        This search was not present in the cache
+      <% else %>
+        This search was present in the cache, and it was used <%= @cache_hit_count %> times
+      <% end %>
+    </p>
+  </section>
+<% end %>
+<section id="movies">
+  <% @movies.each do |movie| %>
+    <div class="movie-card">
+      <div class="row">
+        <span><%= movie['title'] %></span>
+        <span class="vote"><%= movie['vote_average'].round(1) %></span>
+      </div>
+      <% image = movie["backdrop_path"].present? ? "https://image.tmdb.org/t/p/w500/#{movie["backdrop_path"]}" : 'https://dummyimage.com/500x281/000/fff&text=no+image+provided' %>
+      <%= image_tag image %>
+      <div class="row">
+        <span>Release date: </span>
+        <span><%= movie['release_date'].present? ? movie['release_date'] : '-' %></span>
+      </div>
+    </div>
+  <% end %>
+</section>
+
+<% if @total_pages > 1 %>
+  <section id="pagination-controls">
+    <div>
+      <%= link_to "First page", @search_url.call(query: @query, page: 1) %>
+      <% if @page - 1 > 0 %>
+        <%= link_to "Previous page", @search_url.call(query: @query, page: @page - 1) %>
+      <% end %>
+    </div>
+    <div>
+      <% pagination_page_numbers(current_page: @page, total_pages: @total_pages).each do |page| %>
+        <%= link_to page, @search_url.call(query: @query, page:), class: @page == page ? 'selected' : '' %>
+      <% end %>
+    </div>
+    <div>
+      <% if @page < @total_pages %>
+        <%= link_to "Next page", @search_url.call(query: @query, page: @page + 1) %>
+      <% end %>
+      <%= link_to "Last page", @search_url.call(query: @query, page: @total_pages) %>
+    </div>
+  </section>
+<% end %>
